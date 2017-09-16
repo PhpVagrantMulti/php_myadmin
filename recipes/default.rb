@@ -71,6 +71,14 @@ template "phpmyadmin.local.conf" do
     mode   "0644"
 end
 
+template "config.inc.php" do
+    path "/var/www/vhosts/phpmyadmin.local/config.inc.php"
+    source "config.inc.php.erb"
+    owner  "www-data"
+    group  "www-data"
+    mode   "0644"
+end
+
 execute "enable_phpmyadmin" do
     command "sudo a2ensite phpmyadmin.local"
     action :run
