@@ -22,6 +22,14 @@
 # along with PhpVagrantMulti.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+directory "/var/www/vhosts" do
+    not_if { Dir.exists?("/var/www/vhosts") }
+    owner "www-data"
+    group "www-data"
+    mode  "0755"
+    action :create
+end
+
 directory node["phpMyAdmin"]["dir"] do
     owner "www-data"
     group "www-data"
@@ -41,14 +49,6 @@ execute "unpack_phpmyadmin" do
     not_if { Dir.exists?("/opt/phpMyAdmin/phpMyAdmin-4.3.3-all-languages") }
     command "sudo unzip /opt/phpMyAdmin-4.7.4-all-languages.zip -d /opt/phpMyAdmin"
     action :run
-end
-
-directory "/var/www/vhosts" do
-    not_if { Dir.exists?("/var/www/vhosts") }
-    owner "www-data"
-    group "www-data"
-    mode  "0755"
-    action :create
 end
 
 directory "/var/www/vhosts/phpmyadmin.local" do
@@ -72,7 +72,7 @@ template "phpmyadmin.local.conf" do
 end
 
 execute "enable_phpmyadmin" do
-    command "sudo a2ensite phpmyadmin.local
+    command "sudo a2ensite phpmyadmin.local"
     action :run
     notifies :restart, "service[apache2]", :immediately
 end
