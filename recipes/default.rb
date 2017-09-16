@@ -29,8 +29,8 @@ directory node["phpMyAdmin"]["dir"] do
     action :create
 end
                   
-cookbook_file '/opt/phpMyAdmin-4.3.3-all-languages.zip' do
-    source 'phpMyAdmin-4.3.3-all-languages.zip'
+cookbook_file '/opt/phpMyAdmin-4.7.4-all-languages.zip' do
+    source 'phpMyAdmin-4.7.4-all-languages.zip'
     owner 'vagrant'
     group 'vagrant'
     mode '0755'
@@ -39,11 +39,19 @@ end
 
 execute "unpack_phpmyadmin" do
     not_if { Dir.exists?("/opt/phpMyAdmin/phpMyAdmin-4.3.3-all-languages") }
-    command "sudo unzip /opt/phpMyAdmin-4.3.3-all-languages.zip -d /opt/phpMyAdmin"
+    command "sudo unzip /opt/phpMyAdmin-4.7.4-all-languages.zip -d /opt/phpMyAdmin"
     action :run
 end
 
-directory "/var/www/html/local.phpmyadmin.com" do
+directory "/var/www/vhosts" do
+    not_if { Dir.exists?("/var/www/vhosts") }
+    owner "www-data"
+    group "www-data"
+    mode  "0755"
+    action :create
+end
+
+directory "/var/www/vhosts/phpmyadmin.local" do
     owner "www-data"
     group "www-data"
     mode  "0755"
@@ -51,20 +59,20 @@ directory "/var/www/html/local.phpmyadmin.com" do
 end
 
 execute "install_phpmyadmin" do
-    command "sudo cp -r /opt/phpMyAdmin/phpMyAdmin-4.3.3-all-languages/* /var/www/html/local.phpmyadmin.com/"
+    command "sudo cp -r /opt/phpMyAdmin/phpMyAdmin-4.7.4-all-languages/* /var/www/vhosts/phpmyadmin.local/"
     action :run
 end
 
-template "local.phpmyadmin.com.conf" do
-    path "#{node["apache"]["dir"]}/sites-available/local.phpmyadmin.com.conf"
-    source "local.phpmyadmin.com.conf.erb"
+template "phpmyadmin.local.conf" do
+    path "#{node["apache"]["dir"]}/sites-available/phpmyadmin.local.conf"
+    source "phpmyadmin.local.conf.erb"
     owner  "www-data"
     group  "www-data"
     mode   "0644"
 end
 
 execute "enable_phpmyadmin" do
-    command "sudo a2ensite local.phpmyadmin.com"
+    command "sudo a2ensite phpmyadmin.local
     action :run
     notifies :restart, "service[apache2]", :immediately
 end

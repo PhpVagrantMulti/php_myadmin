@@ -22,4 +22,4 @@
 # along with PhpVagrantMulti.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-default["phpMyAdmin"]["dir"]  = "/var/www/html/local.phpmyadmin.com"
+default["phpMyAdmin"]["dir"]  = "/var/www/vhosts/phpmyadmin.local"
